@@ -1,0 +1,15 @@
+.kanban {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  gap: 10px;
+}
+
+.contents {
+  display: flex;
+
+  width: 100%;
+
+  gap: 20px;
+}

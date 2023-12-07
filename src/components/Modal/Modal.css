@@ -1,14 +1,16 @@
-.modal {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-
+dialog {
   border: none;
   border-radius: 8px;
 
   &::backdrop {
     background: rgba(0, 0, 0, 0.5);
   }
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 h2 {
@@ -45,5 +47,7 @@ input {
     border-radius: 6px;
 
     background-color: lightgray;
+
+    cursor: pointer;
   }
 }

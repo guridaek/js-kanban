@@ -1,8 +1,20 @@
 import "./Modal.css";
 
-function Modal({ $target, addIssue }) {
+function Modal({ $target, addIssue, modifyIssue }) {
   this.$element = document.createElement("dialog");
   $target.appendChild(this.$element);
+
+  this.state = {
+    action: "add",
+    issueNumber: null,
+  };
+
+  this.setState = ({ action, issueNumber }) => {
+    this.state = {
+      action: action,
+      issueNumber: action === "modify" ? issueNumber : null,
+    };
+  };
 
   this.render = () => {
     this.$element.innerHTML = `
@@ -20,6 +32,13 @@ function Modal({ $target, addIssue }) {
 
   this.render();
 
+  this.open = ({ action, issueNumber }) => {
+    console.log("open!", action, issueNumber);
+    this.setState({ action, issueNumber });
+
+    this.$element.showModal();
+  };
+
   this.$element.addEventListener("click", (e) => {
     if (e.target === e.currentTarget) this.$element.close();
   });
@@ -29,10 +48,19 @@ function Modal({ $target, addIssue }) {
   });
 
   this.$element.querySelector("#confirm").addEventListener("click", () => {
-    addIssue({
+    const newIssue = {
       title: this.$element.querySelector("#issueTitle").value,
       managerId: this.$element.querySelector("#managerId").value,
-    });
+    };
+
+    if (this.state.action === "add") {
+      addIssue(newIssue);
+    }
+
+    if (this.state.action === "modify") {
+      console.log("수정!", { ...newIssue, issueNumber: this.state.issueNumber });
+      modifyIssue({ ...newIssue, issueNumber: this.state.issueNumber });
+    }
 
     this.$element.close();
   });

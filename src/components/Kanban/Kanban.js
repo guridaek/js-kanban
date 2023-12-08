@@ -1,6 +1,7 @@
 import "./Kanban.css";
 import Column from "../Column/Column";
 import { getIssueList, updateIssueList, updateNextNumber } from "../../data/handler";
+import Modal from "../Modal/Modal";
 
 function Kanban({ $target }) {
   this.$element = document.createElement("div");
@@ -53,30 +54,53 @@ function Kanban({ $target }) {
     });
   };
 
+  const modifyIssue = ({ issueNumber, title, managerId }) => {
+    const updatedList = this.state.issueList.map((issue) => {
+      if (issue.issueNumber !== issueNumber) return issue;
+
+      return {
+        ...issue,
+        title: title,
+        managerId: managerId,
+        updatedDate: new Date(),
+      };
+    });
+
+    this.setState({
+      ...this.state,
+      issueList: updatedList,
+    });
+  };
+
   this.$contents = document.querySelector(".contents");
+
+  const modal = new Modal({ $target: $target, addIssue: addIssue, modifyIssue: modifyIssue });
 
   const toDoColumn = new Column({
     $target: this.$contents,
     title: "to-do",
     issueList: this.state.issueList.filter((issue) => issue.status === "toDo"),
-    addIssue: addIssue,
+    modal: modal,
     removeIssue: removeIssue,
+    modifyIssue: modifyIssue,
   });
 
   const inProgressColumn = new Column({
     $target: this.$contents,
     title: "in progress",
     issueList: this.state.issueList.filter((issue) => issue.status === "inProgress"),
-    addIssue: addIssue,
+    modal: modal,
     removeIssue: removeIssue,
+    modifyIssue: modifyIssue,
   });
 
   const doneColumn = new Column({
     $target: this.$contents,
     title: "done",
     issueList: this.state.issueList.filter((issue) => issue.status === "done"),
-    addIssue: addIssue,
+    modal: modal,
     removeIssue: removeIssue,
+    modifyIssue: modifyIssue,
   });
 }
 

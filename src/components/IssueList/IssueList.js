@@ -1,7 +1,7 @@
 import { formatDate } from "../../data/handler";
 import "./IssueList.css";
 
-function IssueList({ $target, issueList, removeIssue }) {
+function IssueList({ $target, issueList, modal, removeIssue }) {
   this.$element = document.createElement("ul");
   this.$element.className = "issueList";
   $target.appendChild(this.$element);
@@ -23,7 +23,7 @@ function IssueList({ $target, issueList, removeIssue }) {
           <div class="row">
             ${issue.issueNumber}
             <div>
-              <button id="modifyButton">수정</button>
+              <button id="modifyButton" value=${issue.issueNumber}>수정</button>
               <button id="removeButton" value=${issue.issueNumber}>삭제</button>
             </div>
           </div>
@@ -40,9 +40,17 @@ function IssueList({ $target, issueList, removeIssue }) {
   this.render();
 
   this.$element.addEventListener("click", (e) => {
-    if (e.target.id !== "removeButton") return;
+    const issueNumber = e.target.value;
 
-    removeIssue(e.target.value);
+    if (e.target.id === "removeButton") {
+      removeIssue(issueNumber);
+
+      return;
+    }
+
+    if (e.target.id === "modifyButton") {
+      modal.open({ action: "modify", issueNumber: issueNumber });
+    }
   });
 }
 

@@ -1,8 +1,7 @@
 import IssueList from "../IssueList/IssueList";
-import Modal from "../Modal/Modal";
 import "./Column.css";
 
-function Column({ $target, title, issueList, addIssue, removeIssue }) {
+function Column({ $target, title, issueList, modal, removeIssue, modifyIssue }) {
   this.$element = document.createElement("div");
   this.$element.className = "column";
   $target.appendChild(this.$element);
@@ -30,16 +29,16 @@ function Column({ $target, title, issueList, addIssue, removeIssue }) {
 
   this.render();
 
-  const modal = new Modal({ $target: $target, addIssue: addIssue });
-
   this.$element.querySelector("#add-issue").addEventListener("click", () => {
-    modal.$element.showModal();
+    modal.open({ action: "add" });
   });
 
   const contents = new IssueList({
     $target: this.$element,
     issueList: issueList,
     removeIssue: removeIssue,
+    modifyIssue: modifyIssue,
+    modal: modal,
   });
 }
 

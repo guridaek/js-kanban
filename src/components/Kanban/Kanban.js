@@ -77,6 +77,15 @@ function Kanban({ $target }) {
     });
   };
 
+  const removeIssue = (issueNumber) => {
+    const updatedList = this.state.issueList.filter((issue) => issue.issueNumber !== issueNumber);
+
+    this.setState({
+      ...this.state,
+      issueList: updatedList,
+    });
+  };
+
   this.$contents = document.querySelector(".contents");
 
   const toDoColumn = new Column({
@@ -84,6 +93,7 @@ function Kanban({ $target }) {
     title: "to-do",
     issueList: this.state.issueList.filter((issue) => issue.status === "toDo"),
     addIssue: addIssue,
+    removeIssue: removeIssue,
   });
 
   const inProgressColumn = new Column({
@@ -91,6 +101,7 @@ function Kanban({ $target }) {
     title: "in progress",
     issueList: this.state.issueList.filter((issue) => issue.status === "inProgress"),
     addIssue: addIssue,
+    removeIssue: removeIssue,
   });
 
   const doneColumn = new Column({
@@ -98,6 +109,7 @@ function Kanban({ $target }) {
     title: "done",
     issueList: this.state.issueList.filter((issue) => issue.status === "done"),
     addIssue: addIssue,
+    removeIssue: removeIssue,
   });
 }
 

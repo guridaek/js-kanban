@@ -1,6 +1,6 @@
 import "./IssueList.css";
 
-function IssueList({ $target, issueList }) {
+function IssueList({ $target, issueList, removeIssue }) {
   this.$element = document.createElement("ul");
   this.$element.className = "issueList";
   $target.appendChild(this.$element);
@@ -18,12 +18,12 @@ function IssueList({ $target, issueList }) {
   this.render = () => {
     this.$element.innerHTML = `${this.state.issueList
       .map(
-        (issue) => ` <li class="issueItem">
+        (issue) => `<li class="issueItem">
           <div class="row">
             ${issue.issueNumber}
             <div>
-              <button>수정</button>
-              <button>삭제</button>
+              <button id="modifyButton">수정</button>
+              <button id="removeButton" value=${issue.issueNumber}>삭제</button>
             </div>
           </div>
           <div class="row">${issue.title}</div>
@@ -37,6 +37,12 @@ function IssueList({ $target, issueList }) {
   };
 
   this.render();
+
+  this.$element.addEventListener("click", (e) => {
+    if (e.target.id !== "removeButton") return;
+
+    removeIssue(e.target.value);
+  });
 }
 
 export default IssueList;

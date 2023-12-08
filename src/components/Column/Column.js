@@ -2,7 +2,7 @@ import IssueList from "../IssueList/IssueList";
 import Modal from "../Modal/Modal";
 import "./Column.css";
 
-function Column({ $target, title, issueList, addIssue }) {
+function Column({ $target, title, issueList, addIssue, removeIssue }) {
   this.$element = document.createElement("div");
   this.$element.className = "column";
   $target.appendChild(this.$element);
@@ -36,7 +36,11 @@ function Column({ $target, title, issueList, addIssue }) {
     modal.$element.showModal();
   });
 
-  const contents = new IssueList({ $target: this.$element, issueList: issueList });
+  const contents = new IssueList({
+    $target: this.$element,
+    issueList: issueList,
+    removeIssue: removeIssue,
+  });
 }
 
 export default Column;

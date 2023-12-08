@@ -7,11 +7,19 @@
 }
 
 .issueItem {
-  height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  height: 130px;
 
   border: 1px solid black;
-
-  padding: 5px;
+  padding: 10px;
 
   box-sizing: border-box;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
 }

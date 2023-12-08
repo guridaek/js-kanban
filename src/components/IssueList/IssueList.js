@@ -1,3 +1,4 @@
+import { formatDate } from "../../data/handler";
 import "./IssueList.css";
 
 function IssueList({ $target, issueList, removeIssue }) {
@@ -29,7 +30,7 @@ function IssueList({ $target, issueList, removeIssue }) {
           <div class="row">${issue.title}</div>
           <div class="row">
             <p>${issue.managerId}</p>
-            <p>${`${issue.updatedDate.toLocaleString()}`}</p>
+            <p>${formatDate(issue.updatedDate)}</p>
           </div>
         </li>`
       )

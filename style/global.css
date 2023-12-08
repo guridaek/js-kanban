@@ -6,3 +6,7 @@ header {
   font-size: 40px;
   font-weight: bold;
 }
+
+button {
+  cursor: pointer;
+}

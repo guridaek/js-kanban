@@ -4,6 +4,8 @@
   gap: 10px;
 
   padding: 5px;
+
+  overflow-y: auto;
 }
 
 .issueItem {
@@ -11,7 +13,7 @@
   flex-direction: column;
   justify-content: space-between;
 
-  height: 130px;
+  min-height: 130px;
 
   border: 1px solid black;
   padding: 10px;

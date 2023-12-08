@@ -5,8 +5,18 @@ function IssueList({ $target, issueList }) {
   this.$element.className = "issueList";
   $target.appendChild(this.$element);
 
+  this.state = {
+    issueList: issueList,
+  };
+
+  this.setState = (updatedList) => {
+    this.state = { issueList: updatedList };
+
+    this.render();
+  };
+
   this.render = () => {
-    this.$element.innerHTML = `${issueList
+    this.$element.innerHTML = `${this.state.issueList
       .map(
         (issue) => ` <li class="issueItem">
           <div class="row">

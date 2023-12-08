@@ -19,6 +19,8 @@ h2 {
 }
 
 label {
+  position: relative;
+
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -47,5 +49,25 @@ input {
     border-radius: 6px;
 
     background-color: lightgray;
+  }
+}
+
+.errorMessage {
+  visibility: hidden;
+
+  position: absolute;
+  top: 55px;
+  left: 5px;
+
+  color: red;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.error {
+  border: 2px solid red;
+
+  ~ .errorMessage {
+    visibility: visible;
   }
 }

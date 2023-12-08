@@ -49,7 +49,16 @@ function IssueList({ $target, issueList, modal, removeIssue }) {
     }
 
     if (e.target.id === "modifyButton") {
-      modal.open({ action: "modify", issueNumber: issueNumber });
+      const { title, managerId } = this.state.issueList.find(
+        (issue) => issue.issueNumber === issueNumber
+      );
+
+      modal.open({
+        action: "modify",
+        issueNumber: issueNumber,
+        title: title,
+        managerId: managerId,
+      });
     }
   });
 }

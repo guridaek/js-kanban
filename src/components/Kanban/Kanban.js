@@ -2,6 +2,7 @@ import "./Kanban.css";
 import Column from "../Column/Column";
 import { getIssueList, updateIssueList, updateNextNumber } from "../../data/handler";
 import Modal from "../Modal/Modal";
+import { findClosestIndex } from "../../utils/list";
 
 function Kanban({ $target }) {
   this.$element = document.createElement("div");
@@ -62,7 +63,7 @@ function Kanban({ $target }) {
   };
 
   const removeIssue = (issueNumber, status) => {
-    const list = this.state[`${status}List`] || [];
+    const list = this.state[`${status}List`];
 
     const updatedList = list.filter((issue) => issue.issueNumber !== issueNumber);
 
@@ -72,7 +73,7 @@ function Kanban({ $target }) {
   };
 
   const modifyIssue = ({ issueNumber, title, managerId, status }) => {
-    const list = this.state[`${status}List`] || [];
+    const list = this.state[`${status}List`];
 
     const updatedList = list.map((issue) => {
       if (issue.issueNumber !== issueNumber) return issue;
@@ -90,9 +91,9 @@ function Kanban({ $target }) {
     });
   };
 
-  const moveIssue = ({ issueNumber, fromStatus, toStatus }) => {
-    const fromList = this.state[`${fromStatus}List`] || [];
-    const toList = this.state[`${toStatus}List`] || [];
+  const moveIssue = ({ issueNumber, fromStatus, toStatus, toIndex }) => {
+    const fromList = [...this.state[`${fromStatus}List`]];
+    const toList = [...this.state[`${toStatus}List`]];
 
     const idx = fromList.findIndex((issue) => issue.issueNumber === issueNumber);
     if (idx === -1) return;
@@ -100,7 +101,11 @@ function Kanban({ $target }) {
     const removedIssue = fromList[idx];
 
     const updatedFromList = fromList.filter((issue) => issue.issueNumber !== issueNumber);
-    const updatedToList = [...toList, removedIssue];
+    const updatedToList = [...toList];
+
+    if (fromStatus === toStatus) updatedToList.splice(idx, 1);
+
+    updatedToList.splice(0 <= toIndex ? toIndex : updatedToList.length, 0, removedIssue);
 
     this.setState({
       [`${fromStatus}List`]: updatedFromList,
@@ -126,12 +131,13 @@ function Kanban({ $target }) {
 
     droppedColumn.classList.remove("dragOver");
 
-    if (this.draggedStatus === toStatus) return;
+    const toIndex = findClosestIndex(e.clientX, e.clientY);
 
     moveIssue({
       issueNumber: this.draggedIssueNumber,
       fromStatus: this.draggedStatus,
       toStatus: toStatus,
+      toIndex: toIndex,
     });
   });
 

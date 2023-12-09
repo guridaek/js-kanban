@@ -48,7 +48,9 @@ function IssueList({ $target, issueList, modal, removeIssue, status }) {
     const issueNumber = e.target.value;
 
     if (e.target.id === "removeButton") {
-      removeIssue(issueNumber, status);
+      if (confirm("정말 삭제하시겠습니까?")) {
+        removeIssue(issueNumber, status);
+      }
 
       return;
     }

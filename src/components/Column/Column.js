@@ -21,9 +21,11 @@ function Column({ $target, title, issueList, modal, removeIssue, modifyIssue, st
     contents.updateList(list);
   };
 
-  this.$element.querySelector("#add-issue").addEventListener("click", () => {
+  const handleAddIssueClick = () => {
     modal.open({ action: "add" });
-  });
+  };
+
+  this.$element.querySelector("#add-issue").addEventListener("click", handleAddIssueClick);
 
   const contents = new IssueList({
     $target: this.$element,

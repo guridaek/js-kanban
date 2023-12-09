@@ -17,25 +17,25 @@ function IssueList({ $target, issueList, modal, removeIssue, status }) {
     this.render();
   };
 
+  this.renderIssueItem = (issue) => `
+    <li class="issueItem" draggable="true" data-issue-number="${issue.issueNumber}">
+      <div class="row">
+        ${issue.issueNumber}
+        <div>
+          <button id="modifyButton" value="${issue.issueNumber}">수정</button>
+          <button id="removeButton" value="${issue.issueNumber}">삭제</button>
+        </div>
+      </div>
+      <div class="row">${issue.title}</div>
+      <div class="row">
+        <p>${issue.managerId}</p>
+        <p>${formatDate(issue.updatedDate)}</p>
+      </div>
+    </li>
+  `;
+
   this.render = () => {
-    this.$element.innerHTML = `${this.state.issueList
-      .map(
-        (issue) => `<li class="issueItem" draggable="true" data-issue-number="${issue.issueNumber}">
-          <div class="row">
-            ${issue.issueNumber}
-            <div>
-              <button id="modifyButton" value=${issue.issueNumber}>수정</button>
-              <button id="removeButton" value=${issue.issueNumber}>삭제</button>
-            </div>
-          </div>
-          <div class="row">${issue.title}</div>
-          <div class="row">
-            <p>${issue.managerId}</p>
-            <p>${formatDate(issue.updatedDate)}</p>
-          </div>
-        </li>`
-      )
-      .join("")}`;
+    this.$element.innerHTML = this.state.issueList.map(this.renderIssueItem).join("");
   };
 
   this.render();
@@ -44,29 +44,35 @@ function IssueList({ $target, issueList, modal, removeIssue, status }) {
     this.setState({ issueList: list });
   };
 
+  const handleRemoveButtonClick = (issueNumber) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      removeIssue(issueNumber, status);
+    }
+  };
+
+  const handleModifyButtonClick = (issueNumber) => {
+    const { title, managerId } = this.state.issueList.find(
+      (issue) => issue.issueNumber === issueNumber
+    );
+
+    modal.open({
+      action: "modify",
+      issueNumber: issueNumber,
+      title: title,
+      managerId: managerId,
+      status: status,
+    });
+  };
+
   this.$element.addEventListener("click", (e) => {
     const issueNumber = e.target.value;
 
     if (e.target.id === "removeButton") {
-      if (confirm("정말 삭제하시겠습니까?")) {
-        removeIssue(issueNumber, status);
-      }
-
-      return;
+      handleRemoveButtonClick(issueNumber);
     }
 
     if (e.target.id === "modifyButton") {
-      const { title, managerId } = this.state.issueList.find(
-        (issue) => issue.issueNumber === issueNumber
-      );
-
-      modal.open({
-        action: "modify",
-        issueNumber: issueNumber,
-        title: title,
-        managerId: managerId,
-        status: status,
-      });
+      handleModifyButtonClick(issueNumber);
     }
   });
 
@@ -76,7 +82,6 @@ function IssueList({ $target, issueList, modal, removeIssue, status }) {
 
   this.$element.addEventListener("dragleave", (e) => {
     if (e.currentTarget.contains(e.relatedTarget)) return;
-
     this.$element.classList.remove("dragOver");
   });
 

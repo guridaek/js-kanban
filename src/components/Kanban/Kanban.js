@@ -13,9 +13,9 @@ function Kanban({ $target }) {
   this.setState = ({ nextNumber, issueList }) => {
     this.state = { nextNumber: nextNumber, issueList: issueList };
 
-    toDoColumn.setState(issueList.filter((issue) => issue.status === "toDo"));
-    inProgressColumn.setState(issueList.filter((issue) => issue.status === "inProgress"));
-    doneColumn.setState(issueList.filter((issue) => issue.status === "done"));
+    toDoColumn.updateList(issueList.filter((issue) => issue.status === "toDo"));
+    inProgressColumn.updateList(issueList.filter((issue) => issue.status === "inProgress"));
+    doneColumn.updateList(issueList.filter((issue) => issue.status === "done"));
 
     updateNextNumber(nextNumber);
     updateIssueList(issueList);
@@ -27,8 +27,6 @@ function Kanban({ $target }) {
       <div class="contents"></div>
     `;
   };
-
-  this.render();
 
   const addIssue = ({ title, managerId }) => {
     const issue = {
@@ -72,9 +70,11 @@ function Kanban({ $target }) {
     });
   };
 
-  this.$contents = document.querySelector(".contents");
+  this.render();
 
   const modal = new Modal({ $target: $target, addIssue: addIssue, modifyIssue: modifyIssue });
+
+  this.$contents = document.querySelector(".contents");
 
   const toDoColumn = new Column({
     $target: this.$contents,

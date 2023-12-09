@@ -10,8 +10,8 @@ function IssueList({ $target, issueList, modal, removeIssue }) {
     issueList: issueList,
   };
 
-  this.setState = (updatedList) => {
-    this.state = { issueList: updatedList };
+  this.setState = ({ issueList }) => {
+    this.state = { issueList: issueList };
 
     this.render();
   };
@@ -38,6 +38,10 @@ function IssueList({ $target, issueList, modal, removeIssue }) {
   };
 
   this.render();
+
+  this.updateList = (list) => {
+    this.setState({ issueList: list });
+  };
 
   this.$element.addEventListener("click", (e) => {
     const issueNumber = e.target.value;

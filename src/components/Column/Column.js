@@ -6,18 +6,6 @@ function Column({ $target, title, issueList, modal, removeIssue, modifyIssue }) 
   this.$element.className = "column";
   $target.appendChild(this.$element);
 
-  this.state = {
-    issueList: issueList,
-  };
-
-  this.setState = (updatedList) => {
-    this.state = {
-      issueList: updatedList,
-    };
-
-    contents.setState(updatedList);
-  };
-
   this.render = () => {
     this.$element.innerHTML = `
     <div class="title">
@@ -28,6 +16,10 @@ function Column({ $target, title, issueList, modal, removeIssue, modifyIssue }) 
   };
 
   this.render();
+
+  this.updateList = (list) => {
+    contents.updateList(list);
+  };
 
   this.$element.querySelector("#add-issue").addEventListener("click", () => {
     modal.open({ action: "add" });

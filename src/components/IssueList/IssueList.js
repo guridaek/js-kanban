@@ -48,7 +48,7 @@ function IssueList({ $target, issueList, modal, removeIssue, status }) {
     const issueNumber = e.target.value;
 
     if (e.target.id === "removeButton") {
-      removeIssue(issueNumber);
+      removeIssue(issueNumber, status);
 
       return;
     }
@@ -63,6 +63,7 @@ function IssueList({ $target, issueList, modal, removeIssue, status }) {
         issueNumber: issueNumber,
         title: title,
         managerId: managerId,
+        status: status,
       });
     }
   });

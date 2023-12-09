@@ -11,16 +11,33 @@ function Kanban({ $target }) {
   this.state = getIssueList();
 
   this.draggedIssueNumber = null;
+  this.draggedStatus = null;
 
-  this.setState = ({ nextNumber, issueList }) => {
-    this.state = { nextNumber, issueList };
+  this.setState = ({ nextNumber, toDoList, inProgressList, doneList }) => {
+    this.state = {
+      nextNumber: nextNumber || this.state.nextNumber,
+      toDoList: toDoList || this.state.toDoList,
+      inProgressList: inProgressList || this.state.inProgressList,
+      doneList: doneList || this.state.doneList,
+    };
 
-    toDoColumn.updateList(issueList.filter((issue) => issue.status === "toDo"));
-    inProgressColumn.updateList(issueList.filter((issue) => issue.status === "inProgress"));
-    doneColumn.updateList(issueList.filter((issue) => issue.status === "done"));
+    const listsToUpdate = [
+      { list: toDoList, column: toDoColumn },
+      { list: inProgressList, column: inProgressColumn },
+      { list: doneList, column: doneColumn },
+    ];
 
-    updateNextNumber(nextNumber);
-    updateIssueList(issueList);
+    listsToUpdate.forEach(({ list, column }) => {
+      if (list) column.updateList(list);
+    });
+
+    updateNextNumber(nextNumber || this.state.nextNumber);
+    updateIssueList({
+      nextNumber: nextNumber || this.state.nextNumber,
+      toDoList: toDoList || this.state.toDoList,
+      inProgressList: inProgressList || this.state.inProgressList,
+      doneList: doneList || this.state.doneList,
+    });
   };
 
   this.render = () => {
@@ -36,26 +53,28 @@ function Kanban({ $target }) {
       title: title,
       managerId: managerId,
       updatedDate: new Date(),
-      status: "toDo",
     };
 
     this.setState({
       nextNumber: this.state.nextNumber + 1,
-      issueList: [...this.state.issueList, issue],
+      toDoList: [...this.state.toDoList, issue],
     });
   };
 
-  const removeIssue = (issueNumber) => {
-    const updatedList = this.state.issueList.filter((issue) => issue.issueNumber !== issueNumber);
+  const removeIssue = (issueNumber, status) => {
+    const list = this.state[`${status}List`] || [];
+
+    const updatedList = list.filter((issue) => issue.issueNumber !== issueNumber);
 
     this.setState({
-      ...this.state,
-      issueList: updatedList,
+      [`${status}List`]: updatedList,
     });
   };
 
-  const modifyIssue = ({ issueNumber, title, managerId }) => {
-    const updatedList = this.state.issueList.map((issue) => {
+  const modifyIssue = ({ issueNumber, title, managerId, status }) => {
+    const list = this.state[`${status}List`] || [];
+
+    const updatedList = list.map((issue) => {
       if (issue.issueNumber !== issueNumber) return issue;
 
       return {
@@ -67,30 +86,36 @@ function Kanban({ $target }) {
     });
 
     this.setState({
-      ...this.state,
-      issueList: updatedList,
+      [`${status}List`]: updatedList,
     });
   };
 
-  const moveIssue = ({ issueNumber, toStatus }) => {
-    const updatedList = this.state.issueList.map((issue) => {
-      if (issue.issueNumber != issueNumber) return issue;
+  const moveIssue = ({ issueNumber, fromStatus, toStatus }) => {
+    const fromList = this.state[`${fromStatus}List`] || [];
+    const toList = this.state[`${toStatus}List`] || [];
 
-      return {
-        ...issue,
-        status: toStatus,
-      };
+    const idx = fromList.findIndex((issue) => issue.issueNumber === issueNumber);
+    if (idx === -1) return;
+
+    const removedIssue = fromList[idx];
+
+    const updatedFromList = fromList.filter((issue) => issue.issueNumber !== issueNumber);
+    const updatedToList = [...toList, removedIssue];
+
+    this.setState({
+      [`${fromStatus}List`]: updatedFromList,
+      [`${toStatus}List`]: updatedToList,
     });
-
-    this.setState({ ...this.state, issueList: updatedList });
   };
 
   this.render();
 
   this.$element.addEventListener("dragstart", (e) => {
     const issueNumber = e.target.dataset.issueNumber;
+    const status = e.target.closest(".issueList").dataset.status;
 
     this.draggedIssueNumber = issueNumber;
+    this.draggedStatus = status;
   });
 
   this.$element.addEventListener("drop", (e) => {
@@ -101,7 +126,13 @@ function Kanban({ $target }) {
 
     droppedColumn.classList.remove("dragOver");
 
-    moveIssue({ issueNumber: this.draggedIssueNumber, toStatus: toStatus });
+    if (this.draggedStatus === toStatus) return;
+
+    moveIssue({
+      issueNumber: this.draggedIssueNumber,
+      fromStatus: this.draggedStatus,
+      toStatus: toStatus,
+    });
   });
 
   const modal = new Modal({ $target: $target, addIssue: addIssue, modifyIssue: modifyIssue });
@@ -111,7 +142,7 @@ function Kanban({ $target }) {
   const toDoColumn = new Column({
     $target: this.$contents,
     title: "to-do",
-    issueList: this.state.issueList.filter((issue) => issue.status === "toDo"),
+    issueList: this.state.toDoList,
     modal: modal,
     status: "toDo",
     removeIssue: removeIssue,
@@ -121,7 +152,7 @@ function Kanban({ $target }) {
   const inProgressColumn = new Column({
     $target: this.$contents,
     title: "in progress",
-    issueList: this.state.issueList.filter((issue) => issue.status === "inProgress"),
+    issueList: this.state.inProgressList,
     modal: modal,
     status: "inProgress",
     removeIssue: removeIssue,
@@ -131,7 +162,7 @@ function Kanban({ $target }) {
   const doneColumn = new Column({
     $target: this.$contents,
     title: "done",
-    issueList: this.state.issueList.filter((issue) => issue.status === "done"),
+    issueList: this.state.doneList,
     modal: modal,
     status: "done",
     removeIssue: removeIssue,

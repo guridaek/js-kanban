@@ -7,12 +7,14 @@ function Modal({ $target, addIssue, modifyIssue }) {
   this.state = {
     action: "add",
     issueNumber: null,
+    status: null,
   };
 
-  this.setState = ({ action, issueNumber }) => {
+  this.setState = ({ action, issueNumber, status }) => {
     this.state = {
       action: action,
       issueNumber: action === "modify" ? issueNumber : null,
+      status: status,
     };
   };
 
@@ -40,8 +42,8 @@ function Modal({ $target, addIssue, modifyIssue }) {
 
   this.render();
 
-  this.open = ({ action, issueNumber, title, managerId }) => {
-    this.setState({ action, issueNumber });
+  this.open = ({ action, issueNumber, title, managerId, status }) => {
+    this.setState({ action, issueNumber, status });
 
     if (title) this.$element.querySelector("#issueTitle").value = title;
     if (managerId) this.$element.querySelector("#managerId").value = managerId;
@@ -90,7 +92,7 @@ function Modal({ $target, addIssue, modifyIssue }) {
     }
 
     if (this.state.action === "modify") {
-      modifyIssue({ ...newIssue, issueNumber: this.state.issueNumber });
+      modifyIssue({ ...newIssue, issueNumber: this.state.issueNumber, status: this.state.status });
     }
 
     this.close();

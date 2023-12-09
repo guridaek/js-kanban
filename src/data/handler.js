@@ -7,29 +7,34 @@ export const updateNextNumber = (updatedNumber) => {
   localStorage.setItem(LOCAL_STORAGE_KEYS.NEXT_NUMBER, updatedNumber.toString());
 };
 
-export const updateIssueList = (updatedList) => {
-  localStorage.setItem(LOCAL_STORAGE_KEYS.ISSUE_LIST, JSON.stringify(structuredClone(updatedList)));
+export const updateIssueList = ({ toDoList, inProgressList, doneList }) => {
+  localStorage.setItem(
+    LOCAL_STORAGE_KEYS.ISSUE_LIST,
+    JSON.stringify(structuredClone({ toDoList, inProgressList, doneList }))
+  );
 };
 
 export const getIssueList = () => {
   try {
     const nextNumber = Number(localStorage.getItem(LOCAL_STORAGE_KEYS.NEXT_NUMBER));
-    const issueList = structuredClone(
+    const { toDoList, inProgressList, doneList } = structuredClone(
       JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.ISSUE_LIST))
     );
 
-    if (!nextNumber | !issueList) throw new Error();
-
     return {
       nextNumber: nextNumber,
-      issueList: issueList,
+      toDoList: toDoList || [],
+      inProgressList: inProgressList || [],
+      doneList: doneList || [],
     };
   } catch {
     console.error("로컬 스토리지에서 목록을 불러오지 못했습니다.");
 
     return {
       nextNumber: 0,
-      issueList: [],
+      toDoList: [],
+      inProgressList: [],
+      doneList: [],
     };
   }
 };

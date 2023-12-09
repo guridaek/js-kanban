@@ -1,8 +1,9 @@
 import "./Kanban.css";
 import Column from "../Column/Column";
-import { getIssueList, updateIssueList, updateNextNumber } from "../../data/handler";
 import Modal from "../Modal/Modal";
+import { getIssueList, updateIssueList, updateNextNumber } from "../../data/handler";
 import { findClosestIndex } from "../../utils/list";
+import { STATUS } from "../../data/constants";
 
 function Kanban({ $target }) {
   this.$element = document.createElement("div");
@@ -10,11 +11,12 @@ function Kanban({ $target }) {
   $target.appendChild(this.$element);
 
   this.state = getIssueList();
-
   this.draggedIssueNumber = null;
   this.draggedStatus = null;
 
   this.setState = ({ nextNumber, toDoList, inProgressList, doneList }) => {
+    const prevState = { ...this.state };
+
     this.state = {
       nextNumber: nextNumber || this.state.nextNumber,
       toDoList: toDoList || this.state.toDoList,
@@ -22,22 +24,30 @@ function Kanban({ $target }) {
       doneList: doneList || this.state.doneList,
     };
 
-    const listsToUpdate = [
-      { list: toDoList, column: toDoColumn },
-      { list: inProgressList, column: inProgressColumn },
-      { list: doneList, column: doneColumn },
+    this.updateColumns(prevState);
+  };
+
+  this.updateColumns = (prevState) => {
+    const columns = [
+      { column: toDoColumn, list: this.state.toDoList, prevList: prevState.toDoList },
+      {
+        column: inProgressColumn,
+        list: this.state.inProgressList,
+        prevList: prevState.inProgressList,
+      },
+      { column: doneColumn, list: this.state.doneList, prevList: prevState.doneList },
     ];
 
-    listsToUpdate.forEach(({ list, column }) => {
-      if (list) column.updateList(list);
+    columns.forEach(({ column, list, prevList }) => {
+      if (list !== prevList) column.updateList(list);
     });
 
-    updateNextNumber(nextNumber || this.state.nextNumber);
+    updateNextNumber(this.state.nextNumber);
     updateIssueList({
-      nextNumber: nextNumber || this.state.nextNumber,
-      toDoList: toDoList || this.state.toDoList,
-      inProgressList: inProgressList || this.state.inProgressList,
-      doneList: doneList || this.state.doneList,
+      nextNumber: this.state.nextNumber,
+      toDoList: this.state.toDoList,
+      inProgressList: this.state.inProgressList,
+      doneList: this.state.doneList,
     });
   };
 
@@ -64,7 +74,6 @@ function Kanban({ $target }) {
 
   const removeIssue = (issueNumber, status) => {
     const list = this.state[`${status}List`];
-
     const updatedList = list.filter((issue) => issue.issueNumber !== issueNumber);
 
     this.setState({
@@ -74,7 +83,6 @@ function Kanban({ $target }) {
 
   const modifyIssue = ({ issueNumber, title, managerId, status }) => {
     const list = this.state[`${status}List`];
-
     const updatedList = list.map((issue) => {
       if (issue.issueNumber !== issueNumber) return issue;
 
@@ -99,7 +107,6 @@ function Kanban({ $target }) {
     if (idx === -1) return;
 
     const removedIssue = fromList[idx];
-
     const updatedFromList = fromList.filter((issue) => issue.issueNumber !== issueNumber);
     const updatedToList = [...toList];
 
@@ -115,15 +122,52 @@ function Kanban({ $target }) {
 
   this.render();
 
-  this.$element.addEventListener("dragstart", (e) => {
+  this.$element.addEventListener("dragstart", handleDragStart);
+  this.$element.addEventListener("drop", handleDrop);
+
+  const modal = new Modal({ $target: $target, addIssue: addIssue, modifyIssue: modifyIssue });
+
+  this.$contents = document.querySelector(".contents");
+
+  const toDoColumn = new Column({
+    $target: this.$contents,
+    title: "to-do",
+    issueList: this.state.toDoList,
+    modal: modal,
+    status: STATUS.TODO,
+    removeIssue: removeIssue,
+    modifyIssue: modifyIssue,
+  });
+
+  const inProgressColumn = new Column({
+    $target: this.$contents,
+    title: "in progress",
+    issueList: this.state.inProgressList,
+    modal: modal,
+    status: STATUS.IN_PROGRESS,
+    removeIssue: removeIssue,
+    modifyIssue: modifyIssue,
+  });
+
+  const doneColumn = new Column({
+    $target: this.$contents,
+    title: "done",
+    issueList: this.state.doneList,
+    modal: modal,
+    status: STATUS.DONE,
+    removeIssue: removeIssue,
+    modifyIssue: modifyIssue,
+  });
+
+  function handleDragStart(e) {
     const issueNumber = e.target.dataset.issueNumber;
     const status = e.target.closest(".issueList").dataset.status;
 
     this.draggedIssueNumber = issueNumber;
     this.draggedStatus = status;
-  });
+  }
 
-  this.$element.addEventListener("drop", (e) => {
+  function handleDrop(e) {
     e.preventDefault();
 
     const droppedColumn = e.target.closest(".issueList");
@@ -139,41 +183,7 @@ function Kanban({ $target }) {
       toStatus: toStatus,
       toIndex: toIndex,
     });
-  });
-
-  const modal = new Modal({ $target: $target, addIssue: addIssue, modifyIssue: modifyIssue });
-
-  this.$contents = document.querySelector(".contents");
-
-  const toDoColumn = new Column({
-    $target: this.$contents,
-    title: "to-do",
-    issueList: this.state.toDoList,
-    modal: modal,
-    status: "toDo",
-    removeIssue: removeIssue,
-    modifyIssue: modifyIssue,
-  });
-
-  const inProgressColumn = new Column({
-    $target: this.$contents,
-    title: "in progress",
-    issueList: this.state.inProgressList,
-    modal: modal,
-    status: "inProgress",
-    removeIssue: removeIssue,
-    modifyIssue: modifyIssue,
-  });
-
-  const doneColumn = new Column({
-    $target: this.$contents,
-    title: "done",
-    issueList: this.state.doneList,
-    modal: modal,
-    status: "done",
-    removeIssue: removeIssue,
-    modifyIssue: modifyIssue,
-  });
+  }
 }
 
 export default Kanban;

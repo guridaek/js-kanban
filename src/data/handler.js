@@ -1,4 +1,4 @@
-const LOCAL_STORAGE_KEYS = {
+export const LOCAL_STORAGE_KEYS = {
   NEXT_NUMBER: "nextNumbers",
   ISSUE_LIST: "issueList",
 };
@@ -10,17 +10,16 @@ export const updateNextNumber = (updatedNumber) => {
 export const updateIssueList = ({ toDoList, inProgressList, doneList }) => {
   localStorage.setItem(
     LOCAL_STORAGE_KEYS.ISSUE_LIST,
-    JSON.stringify(structuredClone({ toDoList, inProgressList, doneList }))
+    JSON.stringify({ toDoList, inProgressList, doneList })
   );
 };
 
 export const getIssueList = () => {
   try {
     const nextNumber = Number(localStorage.getItem(LOCAL_STORAGE_KEYS.NEXT_NUMBER));
-    const { toDoList, inProgressList, doneList } = structuredClone(
-      JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.ISSUE_LIST))
+    const { toDoList, inProgressList, doneList } = JSON.parse(
+      localStorage.getItem(LOCAL_STORAGE_KEYS.ISSUE_LIST)
     );
-
     return {
       nextNumber: nextNumber,
       toDoList: toDoList || [],

@@ -10,7 +10,7 @@ function Column({ $target, title, issueList, modal, removeIssue, modifyIssue, st
     this.$element.innerHTML = `
     <div class="title">
     ${title}
-    <button id="add-issue">항목 추가</button>
+    <button class="addIssue">항목 추가</button>
     </div>
     `;
   };
@@ -25,7 +25,7 @@ function Column({ $target, title, issueList, modal, removeIssue, modifyIssue, st
     modal.open({ action: "add" });
   };
 
-  this.$element.querySelector("#add-issue").addEventListener("click", handleAddIssueClick);
+  this.$element.querySelector(".addIssue").addEventListener("click", handleAddIssueClick);
 
   const contents = new IssueList({
     $target: this.$element,

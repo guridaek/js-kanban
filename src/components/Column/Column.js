@@ -1,7 +1,7 @@
 import IssueList from "../IssueList/IssueList";
 import "./Column.css";
 
-function Column({ $target, title, issueList, modal, removeIssue, modifyIssue }) {
+function Column({ $target, title, issueList, modal, removeIssue, modifyIssue, status }) {
   this.$element = document.createElement("div");
   this.$element.className = "column";
   $target.appendChild(this.$element);
@@ -31,6 +31,7 @@ function Column({ $target, title, issueList, modal, removeIssue, modifyIssue }) 
     removeIssue: removeIssue,
     modifyIssue: modifyIssue,
     modal: modal,
+    status: status,
   });
 }
 

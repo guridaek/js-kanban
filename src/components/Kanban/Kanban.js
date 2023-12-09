@@ -10,8 +10,10 @@ function Kanban({ $target }) {
 
   this.state = getIssueList();
 
+  this.draggedIssueNumber = null;
+
   this.setState = ({ nextNumber, issueList }) => {
-    this.state = { nextNumber: nextNumber, issueList: issueList };
+    this.state = { nextNumber, issueList };
 
     toDoColumn.updateList(issueList.filter((issue) => issue.status === "toDo"));
     inProgressColumn.updateList(issueList.filter((issue) => issue.status === "inProgress"));
@@ -70,7 +72,37 @@ function Kanban({ $target }) {
     });
   };
 
+  const moveIssue = ({ issueNumber, toStatus }) => {
+    const updatedList = this.state.issueList.map((issue) => {
+      if (issue.issueNumber != issueNumber) return issue;
+
+      return {
+        ...issue,
+        status: toStatus,
+      };
+    });
+
+    this.setState({ ...this.state, issueList: updatedList });
+  };
+
   this.render();
+
+  this.$element.addEventListener("dragstart", (e) => {
+    const issueNumber = e.target.dataset.issueNumber;
+
+    this.draggedIssueNumber = issueNumber;
+  });
+
+  this.$element.addEventListener("drop", (e) => {
+    e.preventDefault();
+
+    const droppedColumn = e.target.closest(".issueList");
+    const toStatus = droppedColumn.dataset.status;
+
+    droppedColumn.classList.remove("dragOver");
+
+    moveIssue({ issueNumber: this.draggedIssueNumber, toStatus: toStatus });
+  });
 
   const modal = new Modal({ $target: $target, addIssue: addIssue, modifyIssue: modifyIssue });
 
@@ -81,6 +113,7 @@ function Kanban({ $target }) {
     title: "to-do",
     issueList: this.state.issueList.filter((issue) => issue.status === "toDo"),
     modal: modal,
+    status: "toDo",
     removeIssue: removeIssue,
     modifyIssue: modifyIssue,
   });
@@ -90,6 +123,7 @@ function Kanban({ $target }) {
     title: "in progress",
     issueList: this.state.issueList.filter((issue) => issue.status === "inProgress"),
     modal: modal,
+    status: "inProgress",
     removeIssue: removeIssue,
     modifyIssue: modifyIssue,
   });
@@ -99,6 +133,7 @@ function Kanban({ $target }) {
     title: "done",
     issueList: this.state.issueList.filter((issue) => issue.status === "done"),
     modal: modal,
+    status: "done",
     removeIssue: removeIssue,
     modifyIssue: modifyIssue,
   });

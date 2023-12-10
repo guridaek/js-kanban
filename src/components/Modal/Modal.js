@@ -18,6 +18,30 @@ function Modal({ $target, addIssue, modifyIssue }) {
     };
   };
 
+  this.render = () => {
+    this.$element.innerHTML = `
+      <form class="modal">
+        <h2>항목 추가/수정</h2>
+        <label>
+          이슈 제목<input id="issueTitle" placeholder="이슈 제목을 입력해주세요" />
+          <p id="issueTitleError" class="errorMessage hide">이슈 제목은 필수 값입니다.</p>
+        </label>
+
+        <label>
+          담당자 id<input id="managerId" placeholder="담당자 id를 입력해주세요" />
+          <p id="managerIdError" class="errorMessage hide">담당자 id는 필수 값입니다.</p>
+        </label>
+
+        <div class="buttonContainer">
+          <button id="cancel" type="button">취소</button>
+          <button id="confirm" type="button">확인</button>
+        </div>
+      </form>
+    `;
+  };
+
+  this.render();
+
   const showError = (element, shouldShow) => {
     element.classList.toggle("error", shouldShow);
   };
@@ -52,30 +76,6 @@ function Modal({ $target, addIssue, modifyIssue }) {
 
     this.close();
   };
-
-  this.render = () => {
-    this.$element.innerHTML = `
-      <form class="modal">
-        <h2>항목 추가/수정</h2>
-        <label>
-          이슈 제목<input id="issueTitle" placeholder="이슈 제목을 입력해주세요" />
-          <p id="issueTitleError" class="errorMessage hide">이슈 제목은 필수 값입니다.</p>
-        </label>
-
-        <label>
-          담당자 id<input id="managerId" placeholder="담당자 id를 입력해주세요" />
-          <p id="managerIdError" class="errorMessage hide">담당자 id는 필수 값입니다.</p>
-        </label>
-
-        <div class="buttonContainer">
-          <button id="cancel" type="button">취소</button>
-          <button id="confirm" type="button">확인</button>
-        </div>
-      </form>
-    `;
-  };
-
-  this.render();
 
   this.open = ({ action, issueNumber, title, managerId, status }) => {
     this.setState({ action, issueNumber, status });

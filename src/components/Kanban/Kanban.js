@@ -122,6 +122,32 @@ function Kanban({ $target }) {
 
   this.render();
 
+  const handleDragStart = (e) => {
+    const issueNumber = e.target.dataset.issueNumber;
+    const status = e.target.closest(".issueList").dataset.status;
+
+    this.draggedIssueNumber = issueNumber;
+    this.draggedStatus = status;
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+
+    const droppedColumn = e.target.closest(".issueList");
+    const toStatus = droppedColumn.dataset.status;
+
+    droppedColumn.classList.remove("dragOver");
+
+    const toIndex = findClosestIndex(e.clientX, e.clientY);
+
+    moveIssue({
+      issueNumber: this.draggedIssueNumber,
+      fromStatus: this.draggedStatus,
+      toStatus: toStatus,
+      toIndex: toIndex,
+    });
+  };
+
   this.$element.addEventListener("dragstart", handleDragStart);
   this.$element.addEventListener("drop", handleDrop);
 
@@ -158,32 +184,6 @@ function Kanban({ $target }) {
     removeIssue: removeIssue,
     modifyIssue: modifyIssue,
   });
-
-  function handleDragStart(e) {
-    const issueNumber = e.target.dataset.issueNumber;
-    const status = e.target.closest(".issueList").dataset.status;
-
-    this.draggedIssueNumber = issueNumber;
-    this.draggedStatus = status;
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-
-    const droppedColumn = e.target.closest(".issueList");
-    const toStatus = droppedColumn.dataset.status;
-
-    droppedColumn.classList.remove("dragOver");
-
-    const toIndex = findClosestIndex(e.clientX, e.clientY);
-
-    moveIssue({
-      issueNumber: this.draggedIssueNumber,
-      fromStatus: this.draggedStatus,
-      toStatus: toStatus,
-      toIndex: toIndex,
-    });
-  }
 }
 
 export default Kanban;

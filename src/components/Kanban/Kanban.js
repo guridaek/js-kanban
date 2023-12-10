@@ -1,8 +1,8 @@
 import "./Kanban.css";
 import Column from "../Column/Column";
 import Modal from "../Modal/Modal";
-import { getIssueList, updateIssueList, updateNextNumber } from "../../data/handler";
-import { findClosestIndex } from "../../utils/list";
+import { getIssueList, updateIssueList, updateNextNumber } from "../../data/storageHandler";
+import { findClosestIndex } from "../../utils/listElement";
 import { STATUS } from "../../data/constants";
 
 function Kanban({ $target }) {

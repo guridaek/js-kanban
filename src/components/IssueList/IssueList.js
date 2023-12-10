@@ -1,4 +1,4 @@
-import { formatDate } from "../../data/handler";
+import { formatDate } from "../../utils/formatter";
 import "./IssueList.css";
 
 function IssueList({ $target, issueList, modal, removeIssue, status }) {

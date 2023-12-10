@@ -1,5 +1,5 @@
 import mockData from "../fixtures/issueList.json";
-import { LOCAL_STORAGE_KEYS } from "../../src/data/handler";
+import { LOCAL_STORAGE_KEYS } from "../../src/data/storageHandler";
 import { STATUS } from "../../src/data/constants";
 
 const setupTestData = () => {

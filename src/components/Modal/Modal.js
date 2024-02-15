@@ -113,6 +113,12 @@ function Modal({ $target, addIssue, modifyIssue }) {
       handleConfirmButtonClick();
     }
   });
+
+  this.$element.addEventListener("keyup", (e) => {
+    if (e.key === "Enter") {
+      handleConfirmButtonClick();
+    }
+  });
 }
 
 export default Modal;
